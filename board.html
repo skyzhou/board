@@ -1,0 +1,348 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>小画板</title>
+		<style>
+			html{
+				overflow:hidden;
+			}
+			body{
+				background:#ffffff;
+				width:100%;
+				height:500px;
+				padding:0px;
+				margin:0px;
+			}
+			ul,li{
+				margin:0px;
+				padding:0px;
+				list-style:none;
+			}
+			select{
+				height:18px;
+			}
+			.header{
+				width:100%;
+				height:33px;
+				position:absolute;
+				z-index:1000;
+				color:#ffffff;
+				background:#004080;
+				padding:0px;
+				font-size:14px;
+			}
+			.header .btn_left{
+				display:inline-block;
+				border:1px solid #000000;
+				width:50px;
+				float:left;
+				text-align:center;
+				padding:3px;
+				margin:5px;
+			}
+			.header .btn_right{
+				display:inline-block;
+				border:1px solid #000000;
+				width:50px;
+				float:right;
+				text-align:center;
+				padding:3px;
+				margin:5px;
+			}
+			.canvas{
+				width:310;
+				height:505;
+				cursor:pointer;
+				position:absolute;
+				left:0px;
+				top:0px;
+				background:#ffffff;
+			}
+			.tool{
+				position:absolute;
+				left:10px;
+				top:72px;
+				width:150px;
+				font-size:12px;
+				color:#400000;
+				height:23px;
+				border:1px solid #6e6e6e;;
+				cursor:pointer;
+				border-radius:2px;
+				background:#e3e3e3;
+				z-index:999;
+				padding:3px;
+			}
+			.tool li{
+				margin-top:0px;
+				text-align:center;
+				padding:2px;
+				width:14px;
+				height:16px;
+				border:1px solid #c9c9c9;
+				float:left;
+				margin-right:3px;
+				margin-left:13px
+			}
+			.tool li:hover{
+				border:1px solid #0076ae;
+			}
+			.tool  .active{
+				background:#FFFFFF;
+				border:1px solid #0076ae;
+				border-radius:4px;
+			}
+			.config{
+				position:absolute;
+				width:300px;
+				height:25px;
+				top:40px;
+				left:10px;
+				padding-top:3px;
+				z-index:888;
+				color:#1575ba;
+				border:1px solid #0076ae;
+				border-radius:2px;
+				-webkit-box-shadow:0 0 1px #ccc;
+				background:#deeeff;
+			}
+			.config li{
+				float:left;
+			}
+			.config label{
+				margin-left:15px;
+				margin-right:4px;
+				font-size:14px;
+			}
+		</style>
+		<script type="text/javascript">
+			/*
+			 * 画图类
+			 */
+			var Canvas=function(elem){
+			var c = elem.getContext("2d"), isDraw = false, x=0, y=0, dx=0, dy=0, offset = 0, that = this, ta,strokeStyle="#FF0000",fillStyle="#008080",
+			hdl = {
+				dw: new Function(),
+				up: new Function(),
+				move:new Function()
+			}
+			shape="line";/*线条*/
+			c.strokeStyle=strokeStyle;
+			c.fillStyle=fillStyle;
+			c.lineWidth="3.0";
+			
+			/*
+			 * 设置
+			 */
+			this.set=function(name,value){
+				if(name=="shape"){
+					shape=value;
+				}
+				else{
+					c[name]=value;
+				}
+			};
+			this.get=function(){
+				return elem.toDataURL();
+			};
+			this.hdl=function(name,value){
+				hdl[name]=value;
+			};
+			this.text=function(elem){
+				ta=elem;
+			};
+			/*
+			 * 插入头像
+			 */
+			this.insert=function(img){
+				c.drawImage(img,x,y);
+			};
+			/*
+			 * 画图
+			 */
+			this.draw={
+				"line":function(){
+					hdl.move=function(){
+						c.lineTo(dx,dy);
+						c.stroke();
+					}
+				},
+				"rect":function(){
+					hdl.move=function(){
+						c.rect(x,y,dx-x,dy-y);
+						c.stroke();
+						c.fill();
+					}
+					
+				},
+				"arc":function(){			
+					hdl.move=function(){
+						c.arc((x+dx)/2,(y+dy)/2,Math.sqrt(Math.pow(dx-x,2)+Math.pow(dy-y,2))/2,0,Math.PI*2);
+						c.stroke();
+						c.fill();
+					}
+				},
+				"dLine":function(){
+					hdl.up=function(){
+						c.lineTo(dx,dy);
+						c.stroke();
+					}
+				},
+				"text":function(){
+					hdl.dw=function(){
+						c.fillText(ta.value,x,y);
+					}
+				},
+				"erase":function(){
+					hdl.dw=function(){
+						c.clearRect(x-8,y-8,16,16); 
+					};
+					hdl.move=function(){
+						c.clearRect(dx-8,dy-8,16,16); 
+					};
+				}
+				
+			};
+			this.clear=function(){
+				c.clearRect(0,0,314,508); 
+			};
+			
+			/*
+			 * 事件监听
+			 */
+			elem.addEventListener("touchstart",function(evt){
+			//elem.addEventListener("mousedown",function(evt){
+				
+				//初始化
+				that.draw[shape]();
+				//if(evt.button==0){		
+				c.beginPath();
+							
+				var touch = evt.touches[0];	
+				x=touch.clientX-offset;//+window.pageXOffset;
+				y=touch.clientY-offset;//+window.pageYOffset;
+				c.moveTo(x,y);
+				isDraw=true;
+				hdl.dw();
+				hdl.dw=new Function();//删除回调
+				//}
+				//else{
+					
+				//}
+				evt.preventDefault();
+			},false);
+			elem.addEventListener("touchend",function(evt){
+			//elem.addEventListener("mouseup",function(evt){
+				c.closePath();
+				isDraw=false;
+				hdl.up();//执行回调
+				hdl.move=new Function();
+				hdl.up=new Function();//删除回调
+			},false);
+			elem.addEventListener("touchmove",function(evt){
+			//elem.addEventListener("mousemove",function(evt){
+				if(isDraw){
+					var touch = evt.touches[0];
+					dx=touch.clientX-offset;//+window.pageXOffset;
+					dy=touch.clientY-offset;//+window.pageYOffset;
+					hdl.move();//执行回调
+				}
+				evt.preventDefault();	
+			},false)
+		}
+		/*
+		 * 页面JS
+		 */	
+			
+		var $=function(id){return document.getElementById(id);};
+		var Tool={
+			index:"line",
+			set:function(index){
+				$(this.index).className="";
+				this.index=index;
+				$(this.index).className="active";
+				CTX.set("shape",index);
+				
+			},
+			save:function(){
+				window.open(CTX.get());
+				
+			},
+			text:function(id){
+				Tool.set(id);
+				CTX.text($("text_val"));
+			},
+			color:function(elem,name){
+				var color=elem.value;
+				elem.style.color=color;
+				elem.style.background=color;
+				CTX.set(name,color);
+			},
+			save:function(){
+				window.demo.clickOnAndroid("该功能暂不支持");
+			}
+		};
+		</script>
+    </head>
+    <body>
+		<div class="header">
+        	<div class="btn_left" onclick="CTX.clear();">清除</div>
+			<div class="btn_right" onclick="Tool.save()">保存</div>
+        </div>
+		<ul class="tool">
+			<li id="line"  onclick="Tool.set(this.id);" title="自由线条">～</li>
+			<!--<li id="dLine"  onclick="Tool.set(this.id);" title="直线">—</li>-->
+			<li id="arc"  onclick="Tool.set(this.id);" title="圆">○</li>
+			<li id="rect" onclick="Tool.set(this.id);" title="矩形">□</li>
+			<!--<li id="text" onclick="Tool.text(this.id);" title="文字">T</li>-->
+			<li id="erase" onclick="Tool.set(this.id);" title="橡皮擦">■</li>
+			<!--<li onclick="Tool.save();" title="保存图片">↓</li>-->
+        </ul>
+		<ul class="config" id="config">
+			<!--<li><label>文字</label><input type="text" id="text_val" value="hello" size="5" /></li>-->
+			<li><label>线条</label><select onchange="CTX.set('lineWidth',this.value);">
+				<option value="3.0">3.0</option>
+				<option value="1.0">1.0</option>
+				<option value="2.0">2.0</option>
+				<option value="4.0">4.0</option>
+				<option value="5.0">5.0</option>
+				<option value="6.0">6.0</option>
+				<option value="7.0">7.0</option>
+				</select>
+			</li>
+			<li><label>边框</label><select  onchange="Tool.color(this,'strokeStyle');" style="width:50px;color:#FF0000;background:#FF0000;">
+				<option value="#000000" style="color:#000000;background:#FFFFFF;">黑</option>
+				<option value="#FF0000" style="color:#FF0000;background:#FFFFFF;">红</option>
+				<option value="#ff8040" style="color:#ff8040;background:#FFFFFF;">橙</option>
+				<option value="#f8df07" style="color:#f8df07;background:#FFFFFF;">黄</option>
+				<option value="#008080" style="color:#008080;background:#FFFFFF;">绿</option>
+				<option value="#0080ff" style="color:#0080ff;background:#FFFFFF;">蓝</option>
+				<option value="#FFFFFF" style="color:#000000;background:#FFFFFF;">白</option>
+				</select>
+			</li>
+			<li><label>填充</label><select  onchange="Tool.color(this,'fillStyle');" style="width:50px;color:#008080;background:#008080;">
+				<option value="#000000" style="color:#000000;background:#FFFFFF;">黑</option>
+				<option value="#FF0000" style="color:#FF0000;background:#FFFFFF;">红</option>
+				<option value="#ff8040" style="color:#ff8040;background:#FFFFFF;">橙</option>
+				<option value="#f8df07" style="color:#f8df07;background:#FFFFFF;">黄</option>
+				<option value="#008080" style="color:#008080;background:#FFFFFF;">绿</option>
+				<option value="#0080ff" style="color:#0080ff;background:#FFFFFF;">蓝</option>
+				<option value="#FFFFFF" style="color:#000000;background:#FFFFFF;">白</option>
+				</select>
+			</li>
+			<!--<li>
+				<label>本地图片</label>
+				<input type="file" name="file" style="width:70px;" onchange="Tool.upload(this);" disabled="true"/>
+			</li>-->
+		</ul>
+		<div class="canvas">
+		<canvas id="canvas"  width="310px" height="500px">Does not support
+        </canvas>
+		</div>
+        <script type='text/javascript'>
+           var CTX=new Canvas($("canvas"));
+		   Tool.set("line");
+        </script>
+    </body>
+</html>
