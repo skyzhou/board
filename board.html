@@ -10,7 +10,8 @@
 				overflow: hidden;
 			}
 			body {
-				background: #ffffff;
+				background:url(img/bg.jpg);
+				/*background: #EE7621;*/
 				padding: 0px;
 				margin: 0px;
 				font-size:12px;
@@ -20,74 +21,229 @@
 				padding: 0px;
 				list-style: none;
 			}
-			.bar,.menu{
-				position: absolute;
-				bottom:0px;
-				padding:4px;
-				border-top:1px solid #EE2C2C;
-				background: #EE7621;
+			
+			.top{
+				top:0px;
 			}
-			.bar{
-				left: 0px;
-				z-index: 99;
+			.bottom{
+				bottom:0px
 			}
-			.bar li{
+			.left{
 				float:left;
-				width:50px;
-				margin:2px;
-				height:25px;
-				padding: 2px;
 			}
-			.bar label{
-				color:#ffffff;
-				display:inline-block;
-				margin-top:5px;
-				margin-left:3px;
+			.right{
+				float:right;
+			}
+			.center{
+				position:absolute;
+				left:50%;
+			}
+			.btn{
+				color: #ffffff;
+				text-decoration: none;
+				padding-top:5px;		
+				display:block;
+				height:20px;
+				width:50px;
+				border: 1px solid #A52A2A;
+				border-radius:4px;
+				background: #CD6839;
+				font-size:14px;
+			}
+			.camera,.photo,.settings,.share,.erase{
+				background:url(img/icon.png);
+				background-repeat:no-repeat;
+			}
+			.camera{
+				background-position: 0px -25px;
+			}
+			.photo{
+				background-position: 0px -75px;
+			}
+			.settings{
+				background-position: 0px 0px;
+			}
+			.share{
+				background-position: 0px -50px;
+			}
+			.erase{
+				background-position: 0px -98px;
 			}
 			.menu{
-				right: 0px;
-				z-index: 88;
-				padding-left:100px;
+				position: absolute;
+				left:0px;
+				z-index:88;
+				display:block;
+				height:34px;
+				width:100%;
+				padding:0px;
+				background:url(img/bg_menu_top.png)
+				/*background: #EE7621;*/
+			}
+			/**
+			 * 	menu
+			 */
+			.menu li{
+				margin:5px 15px 5px;
+				font-size:14px;
+				/*border-bottom: 1px solid #A52A2A;
+				border-radius:4px;*/
+				padding:0px;
+				/*background:#CD4F39;*/
+				text-align: center;
+				width:80px;
+				height:25px;
 				
 			}
-			.menu li{
-				float:right;
-				margin:2px;
-				height:25px;
-				padding: 2px;
+			.menu a{
+				color: #ffffff;
+				text-decoration: none;
+				padding-left:25px;
+				padding-top:5px;
+				display:block;
+				height:20px;
 			}
-			.tips{
+			.canvas{
+				
+				min-height:400px;
+				margin: 45px 15px 45px;
+				border:1px solid #EE2C2C;
+				border-radius:8px;
+				padding: 5px;
+			}
+			canvas{
+				background:#ffffff;
+				border-radius:8px;
+			}
+			.config{
 				position: absolute;
-				top:100px;
+				top:70px;
 				left:50%;
 				margin-left:-95px;
 				width:150px;
-				height:80px;
+				height:240px;
 				padding:20px;
-				z-index: 77;
+				z-index: 100;
 				border: 1px solid #FF6347;
 				border-radius:10px;
 				background: #FF8247;
 				text-align:center;
 				display:block;
 			}
-			.tips input{
+			.config li{
+				padding:5px;
+			}	
+			.config h2{
+				margin-bottom:5px;
+				padding:0px;
+			}	
+			.config select{
+				width:65px;
+				display:inline-block;
+				
+			}
+			.config label{
+				width:45px;
+				display:inline-block;
+			}	
+			.config input{
 				padding:6px;
 				font-size:14px;
 			}
 		</style>
+		
+	</head>
+	<body>
+		<ul class="menu top">
+			<li class="left">
+				<a href="javascript:;" onclick="Bd.clear();" class="erase">清 除</a>
+			</li>
+			
+			<li class="right">
+				<a href="javascript:;" onclick="Bd.share();" class="share">分 享</a>
+			</li>
+		</ul>
+		<div class="canvas" id="canvas">
+			
+		</div>
+		<ul class='menu bottom'>
+			<li class="left ">
+				<a href="javascript:;" onclick="Bd.camera();" class="camera">拍 照</a>
+			</li>
+			<li class="center" style="margin-left:-40px;">
+				<a href="javascript:;" onclick="Bd.upload();" class="photo">上 传</a>
+			</li>
+			<li class="right ">
+				<a href="javascript:;" onclick="Tool.config(0);" class="settings">设 置</a>
+			</li>
+		</ul>
+		
+		
+		<div class="config" id="config">
+			<h2>设置</h2>
+			<ul>
+				<li>
+					<label>工具</label>
+					<select  onchange="Tool.set(this.value);">
+						<option value="line">铅笔</option>
+						<option value="arc">圆规</option>
+						<option value="rect">方块</option>
+						<option value="erase">橡皮</option>
+					</select>
+				</li>
+				<li>
+					<label>线条</label>
+					<select onchange="Bd.set('lineWidth',this.value);">
+						<option value="1.0">1.0</option>
+						<option value="3.0">3.0</option>
+						<option value="2.0">2.0</option>
+						<option value="4.0">4.0</option>
+						<option value="5.0">5.0</option>
+						<option value="6.0">6.0</option>
+						<option value="7.0">7.0</option>
+					</select>
+				</li>
+				<li>
+					<label>描边</label>
+					<select  onchange="Tool.color(this,'strokeStyle');">
+						<option value="#000000">黑</option>
+						<option value="#FF0000">红</option>
+						<option value="#ff8040">橙</option>
+						<option value="#f8df07">黄</option>
+						<option value="#008080">绿</option>
+						<option value="#0080ff">蓝</option>
+						<option value="#FFFFFF">白</option>
+				</select>
+				</li>
+				<li>
+					<label>填充</label>
+					<select  onchange="Tool.color(this,'fillStyle');">
+						<option value="#000000" >黑</option>
+						<option value="#FF0000" >红</option>
+						<option value="#ff8040" >橙</option>
+						<option value="#f8df07">黄</option>
+						<option value="#008080" >绿</option>
+						<option value="#0080ff" >蓝</option>
+						<option value="#FFFFFF" >白</option>
+					</select>
+				</li>
+			</ul>
+			<div style="padding: 2px 50px 2px;margin: 5px;"><a href="javascript:;" onclick="Tool.config(1);" class="btn">确 定</a></div>
+		</div>
 		<script type="text/javascript">
 			/**
 			 * @description 画图主类
 			 * @constructor Canvas
 			 * @param {Object} elem canvas元素对象
 			 */
-			var Canvas = function(elem,strokeStyle,fillStyle) {
-				var sc = window.screen, scX = sc.width, scY = sc.height;
+			var Canvas = function(strokeStyle,fillStyle) {
+				var elem=document.createElement('canvas');
+				$('canvas').appendChild(elem);
+				var sc = window.screen, scX = sc.width-30-5*2, scY = sc.height-45*2-5*3;
 				elem.width = scX;
 				elem.height = scY;
 
-				var c = elem.getContext("2d"), isDraw = false, fn = new Function(), x = 0, y = 0, dx = 0, dy = 0, offset = 0, that = this, ta, 
+				var c = elem.getContext("2d"), isDraw = false, fn = new Function(), x = 0, y = 0, dx = 0, dy = 0, offsetY = 50,offsetX=20, that = this, ta, 
 					hdl = {
 						dw : new Function(),
 						up : new Function(),
@@ -134,8 +290,35 @@
 				/**
 				 * @description 插入头像 未使用
 				 */
-				this.insert = function(img) {
-					c.drawImage(img, x, y);
+				this.camera=function(){
+					var that=this;
+					navigator.camera.getPicture(that.insert, function(message){
+						navigator.notification.alert('获取失败', function(){}, message, '确定');
+					}, { quality: 50,destinationType: Camera.DestinationType.FILE_URI });
+				};
+				this.insert = function(URI) {
+					/*
+					try{
+						this.wx(URI);
+					}catch(e){
+						navigator.notification.alert('fasongshibai', function(){}, e, '确定');
+					}
+					*/
+					var img=new Image();
+					img.src=URI;
+					img.onload=function(){
+						c.drawImage(img, 0, 0,scX,scY);
+						
+					}
+				};
+				this.share=function(arg){
+					window.wx.sendWxMsg(arg||'');
+				};
+				this.upload=function(){
+					var that=this;
+					navigator.camera.getPicture(that.insert, function(message){
+						navigator.notification.alert('获取失败', function(){}, message, '确定');
+					}, { quality: 50,destinationType: Camera.DestinationType.FILE_URI ,sourceType : Camera.PictureSourceType.PHOTOLIBRARY});
 				};
 				/**
 				 * @description 设置各种图形，所对应的手指动作句柄
@@ -199,9 +382,9 @@
 					c.beginPath();
 
 					var touch = evt.touches[0];
-					x = touch.clientX - offset;
+					x = touch.clientX - offsetX;
 					//+window.pageXOffset;
-					y = touch.clientY - offset;
+					y = touch.clientY - offsetY;
 					//+window.pageYOffset;
 					c.moveTo(x, y);
 					isDraw = true;
@@ -223,9 +406,9 @@
 					//elem.addEventListener("mousemove",function(evt){
 					if(isDraw) {
 						var touch = evt.touches[0];
-						dx = touch.clientX - offset;
+						dx = touch.clientX - offsetX;
 						//+window.pageXOffset;
-						dy = touch.clientY - offset;
+						dy = touch.clientY - offsetY;
 						//+window.pageYOffset;
 						hdl.move();
 						//执行回调
@@ -255,79 +438,19 @@
 				},
 				color : function(elem, name) {
 					var color = elem.value;
+					elem.style.background=color;
 					Bd.set(name, color);
 				},
 				save : function() {
 					window.demo.clickOnAndroid("该功能暂不支持");
+				},
+				config:function(arg){
+					!Bd&&(Bd = new Canvas($("canvas")));
+					$('config').style.display=arg?"none":'';
 				}
 			};
 			var Bd;
-			var Start=function(){
-				Bd = new Canvas($("canvas"));
-				Tool.set("line");
-				$('tips').style.display="none";
-			}
 
 		</script>
-	</head>
-	<body>
-		
-		<div class="canvas">
-			<canvas id="canvas">
-				Does not support
-			</canvas>
-		</div>
-		<ul class="bar">
-			<li>
-				<select  onchange="Tool.set(this.value);">
-					<option value="line">铅笔</option>
-					<option value="arc">圆规</option>
-					<option value="rect">方块</option>
-					<option value="erase">橡皮</option>
-				</select>
-			</li>
-			<li>
-				<select onchange="Bd.set('lineWidth',this.value);">
-					<option value="3.0">3.0</option>
-					<option value="1.0">1.0</option>
-					<option value="2.0">2.0</option>
-					<option value="4.0">4.0</option>
-					<option value="5.0">5.0</option>
-					<option value="6.0">6.0</option>
-					<option value="7.0">7.0</option>
-				</select>
-			</li>
-			<li>
-				<select  onchange="Tool.color(this,'strokeStyle');">
-					<option value="#000000">□黑</option>
-					<option value="#FF0000">□红</option>
-					<option value="#ff8040">□橙</option>
-					<option value="#f8df07">□黄</option>
-					<option value="#008080">□绿</option>
-					<option value="#0080ff">□蓝</option>
-					<option value="#FFFFFF">□白</option>
-			</select>
-			</li>
-			<li>
-				<select  onchange="Tool.color(this,'fillStyle');">
-					<option value="#000000" >■黑</option>
-					<option value="#FF0000" >■红</option>
-					<option value="#ff8040" >■橙</option>
-					<option value="#f8df07">■黄</option>
-					<option value="#008080" >■绿</option>
-					<option value="#0080ff" >■蓝</option>
-					<option value="#FFFFFF" >■白</option>
-				</select>
-			</li>
-		</ul>
-		<ul class="menu">
-			<li>
-				<input type="button" value="清除" onclick="Bd.clear();"/>
-			</li>
-		</ul>
-		<div class="tips" id="tips">
-			<h2>亲，记得分享哦～</h2>
-			<div><input type="button" value="开始吧" onclick="Start();"/></div>
-		</div>
 	</body>
 </html>
